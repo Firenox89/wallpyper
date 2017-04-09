@@ -58,7 +58,7 @@ def pickWallpaper(wallpapers, recent, screenRatio):
     wallpaper = None
     while True:
         rndNr = str(random.randrange(len(wallpapers)))
-        if rndNr not in recent:
+        if str(rndNr) not in recent:
             wallpaper = wallpapers[int(rndNr)]
             imgSize = get_image_size(wallpaper)
             if (imgSize is not None):
@@ -81,7 +81,7 @@ def getRecentWallpaperList(numberOfRecentWallpapers):
         recent = []
     else:
         log = open(logfile, 'r')
-        recent = [line.rstrip('\n') for line in log][numberOfRecentWallpapers:]
+        recent = [line.rstrip('\n') for line in log][-numberOfRecentWallpapers:]
         log.close()
     return recent
 
@@ -89,19 +89,23 @@ def callFeh(wallpaperList, recentWallpaperList):
     screens = get_monitors()
 
     fehcall = ["feh", "--bg-max"]
+    paintedScreens = []
     for s in screens:
-       screenRatio = float(s.width)/s.height
-       pick = pickWallpaper(wallpaperList, recentWallpaperList, screenRatio)
-       fehcall.append(pick)
+       #check for overlapping screens
+       if not [sc for sc in paintedScreens if sc.x == s.x and sc.y == s.y]: 
+          screenRatio = float(s.width)/s.height
+          pick = pickWallpaper(wallpaperList, recentWallpaperList, screenRatio)
+          fehcall.append(pick)
+          paintedScreens.append(s)
 
     environment = os.environ
-    environment["DISPLAY"] = ':0.0'
+    environment["DISPLAY"] = ':0'
     environment["XAUTHORITY"] = '/home/firenox/.Xauthority'
 
     subprocess.Popen(fehcall, env=environment)
 
 wallpaperList = getWallpaperList()
-recentWallpaperList = getRecentWallpaperList(int(len(wallpaperList)*0.75))
+recentWallpaperList = getRecentWallpaperList(int(len(wallpaperList)*0.5))
 callFeh(wallpaperList, recentWallpaperList)
 writeLog(recentWallpaperList)
 
