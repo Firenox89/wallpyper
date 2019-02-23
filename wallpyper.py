@@ -66,7 +66,7 @@ def pickWallpaper(wallpapers, recent, screenRatio):
                 if (screenRatio < 1 and imgRatio < 1 or screenRatio > 1 and imgRatio > 1):
                     recent.append(rndNr)
                     break
-    return wallpaper 
+    return wallpaper
 
 def getWallpaperList():
     wallpapers = []
@@ -92,7 +92,7 @@ def callFeh(wallpaperList, recentWallpaperList):
     paintedScreens = []
     for s in screens:
         #check for overlapping screens
-        if not [sc for sc in paintedScreens if sc.x == s.x and sc.y == s.y]: 
+        if not [sc for sc in paintedScreens if sc.x == s.x and sc.y == s.y]:
             screenRatio = float(s.width)/s.height
             pick = pickWallpaper(wallpaperList, recentWallpaperList, screenRatio)
             fehcall.append(pick)
