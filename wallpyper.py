@@ -11,7 +11,7 @@ import imghdr
 from screeninfo import get_monitors
 
 logfile = os.path.expanduser('~')+"/.wallpyer"
-wallpaperPaths = os.path.expanduser('~')+'/shinobooru/yande.re', os.path.expanduser('~')+'/shinobooru/konachan.com'
+shinobooruPath = os.path.expanduser('~')+'/git/wallpyper/Shinobooru'
 
 #http://stackoverflow.com/questions/8032642/how-to-obtain-image-size-using-standard-python-class-without-using-external-lib
 def get_image_size(fname):
@@ -68,12 +68,17 @@ def pickWallpaper(wallpapers, recent, screenRatio):
                     break
     return wallpaper
 
+def useWaifu2xVersionIfAvailable(path):
+    waifu2xPath = path.replace("Shinobooru", "ShinobooruWaifu2x")
+    print(waifu2xPath)
+    if os.path.exists(waifu2xPath):
+        return waifu2xPath
+    else:
+        return path
+
 def getWallpaperList():
-    wallpapers = []
-    for path in wallpaperPaths:
-        files = os.listdir(path)
-        wallpapers += [path+"/"+wallpaper for wallpaper in files]
-    return wallpapers
+    files = os.listdir(shinobooruPath)
+    return [shinobooruPath+"/"+wallpaper for wallpaper in files]
 
 def getRecentWallpaperList(numberOfRecentWallpapers):
     if not os.path.isfile(logfile):
@@ -95,6 +100,8 @@ def callFeh(wallpaperList, recentWallpaperList):
         if not [sc for sc in paintedScreens if sc.x == s.x and sc.y == s.y]:
             screenRatio = float(s.width)/s.height
             pick = pickWallpaper(wallpaperList, recentWallpaperList, screenRatio)
+            pick = useWaifu2xVersionIfAvailable(pick)
+            print(pick)
             fehcall.append(pick)
             paintedScreens.append(s)
 
